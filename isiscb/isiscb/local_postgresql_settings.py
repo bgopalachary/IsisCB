@@ -180,7 +180,7 @@ LOGGING = {
 		"app_analyzer": {
 			"level": "DEBUG",
 			"class": "logging.FileHandler",
-			"filename": "/Users/jdamerow/UpConsulting/logs/app_analyzer.log",
+			"filename": "/Users/bhavanagopalachary/git/logs/app_analyzer.log",
 			"formatter": "verbose",
 		}
 	},
@@ -197,7 +197,7 @@ LOGGING = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'isiscb_new',
+        'NAME': 'isiscbnew',
         'USER': 'upconsulting',
         'PASSWORD': 'upconsulting',
         'HOST': os.environ.get('DATABASE_HOST', 'localhost'),

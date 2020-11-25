@@ -23,7 +23,7 @@ def get_label_string(record):
         kwargs = {
             'authors': ", ".join([bleach_safe(contributor_as_string(x)) for x in get_authors(record)]),
             'title': bleach_safe(get_title(record)),
-            'year': bleach_safe(get_pub_year(record)),
+            'year': bleach_safe(str(get_pub_year(record))),
             }
         if record.type_controlled == Citation.BOOK:
             return u"{authors} <em>{title}</em> ({year})".format(**kwargs)
@@ -144,7 +144,9 @@ def join_attributes_flat(attrlist, concator):
 
 @register.filter
 def get_contributors(citation):
+    #print citation.acrelation_set.filter(type_controlled__in=['AU', 'CO', 'ED'], data_display_order__lt=30).order_by('data_display_order')
     return citation.acrelation_set.filter(type_controlled__in=['AU', 'CO', 'ED'], data_display_order__lt=30).order_by('data_display_order')
+
 
 
 @register.filter
