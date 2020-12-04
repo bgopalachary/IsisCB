@@ -162,6 +162,9 @@ def get_times(auth1, auth2):
     z = dict(zip(bins , counts))
     new1 = [{"type": f, "count": k} for f,k in z.items()] 
     #print(new1)
+    # CachedDecadeData d = CachedDecadeData()
+    # add f, k and authority ids
+    # d.save()
     return new1
 
 

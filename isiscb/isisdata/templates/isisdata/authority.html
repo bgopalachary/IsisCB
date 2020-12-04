@@ -890,7 +890,7 @@ $(function () {
       .range(colors)
       .domain([0,30,55,75,120,150,180,220,275,300])
     
-    data = {{c_cat|safe}};
+    //data = {{c_cat|safe}};
 
     var tooltip = d3.select("#my_dataviz1-{{forloop.counter}}")
   .append("div")
@@ -918,8 +918,8 @@ $(function () {
                 tooltip
                   .style("opacity", 0)
               }
-    
-    svg.selectAll()
+      $.get( "{% url 'authority_decade' authority.id facet.0 'CATEGORY' %}", function( data ) {
+      svg.selectAll()
           .data(data, function(d) {return d.type+':'+d.count;})
           .enter()
           .append("rect")
@@ -938,6 +938,8 @@ $(function () {
       .on("mouseover", mouseover)
       .on("mousemove", mouseover)
       .on("mouseleave", mouseleave)
+          })
+    
     </script>
           {% endwith %}
           {% endfor %}
@@ -1625,7 +1627,7 @@ $(function () {
                               var mouseover = function(d) {
                 
                                 tooltip
-                                    .html("Year: " + d.type + "<br>" + "Citations: " + d.count)
+                                    .html("Year: " + d.type + "<br>" + "Citations: " + d.decade_count)
                                     .style("opacity", 1)
                               }
                               var mousemove = function(d) {
@@ -1639,25 +1641,25 @@ $(function () {
                               }
                                                           
 
-                                    
+                              $.get( "{% url 'authority_decade' authority.id facet.0 'CO' %}", function( data1 ) {     
                             
                                   //console.log(data[0])
                               svg.selectAll()
-                                   .data(data, function(d) {return d.type+':'+d.count})
+                                   .data(data1, function(d) {return d.decade+':'+d.decade_count})
                                     .enter()
                                     .append("rect")
                                     .attr("stroke","black")
                                     .style("stroke-width", 1)
-                                   .attr("x", function(d) { return x(d.type) })
+                                   .attr("x", function(d) { return x(d.decade) })
                                     .attr("y", 0)
                                     .attr("rx", 0) //for rounded rectangle
                                     .attr("ry", 0) //for rounded rectangle
                                     .attr("width", x.bandwidth() )
                                       .attr("height", y.bandwidth() )
                                         .style("fill", function(d) { 
-                                                  return myColor(d.count)} )
+                                                  return myColor(d.decade_count)} )
                                         .on("mouseover", mouseover)
-                                         .on("mouseleave", mouseleave);
+                                         .on("mouseleave", mouseleave); })
                                         </script>
                                                            
        {% endwith %}
@@ -1944,7 +1946,7 @@ $(function () {
     var mouseover = function(d) {
       tooltip.style("opacity", 1)
       tooltip
-        .html("Publications: " + d.count)
+        .html("Publications: " + d.decade_count)
         .style("left", (d3.event.pageX) + 10 + "px")
         .style("top", (d3.event.pageY ) + "px")
   
@@ -1953,22 +1955,23 @@ $(function () {
         
    
     }
-  
+    //$.get( "{% url 'authority_decade' authority.id facet.0 'PE' %}", function( data1 ) {
     svg.selectAll()
-            .data(data, function(d) {return d.type+':'+d.count;})
+            .data(data1, function(d) {return d.decade+':'+d.decade_count;})
             .enter()
             .append("rect")
             .attr("stroke","black")
             .style("stroke-width", 1)
-            .attr("x", function(d) { return x(d.type) })
+            .attr("x", function(d) { return x(d.decade) })
             .attr("y", 0)
             .attr("rx", 0) //for rounded rectangle
             .attr("ry", 0) //for rounded rectangle
             .attr("width", x.bandwidth() )
             .attr("height", y.bandwidth() )
             .style("fill", function(d) {
-                    return myColor(d.count)} )
-  
+                    return myColor(d.decade_count)} )
+              
+        console.log(data)
     var mouseleave = function(d) {
       tooltip.style("opacity", 0)
       d3.select(this)
@@ -1978,6 +1981,7 @@ $(function () {
         .on("mouseover", mouseover)
         .on("mousemove", mouseover)
         .on("mouseleave", mouseleave)
+ // })
               </script>
             </li>
           {% endwith %}

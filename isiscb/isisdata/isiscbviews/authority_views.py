@@ -7,9 +7,9 @@ from django.contrib.admin.views.decorators import user_passes_test
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.cache import caches
 from django.db.models import Prefetch
-
+from django.core import serializers
 from django.conf import settings
-
+from django.forms.models import model_to_dict
 from rest_framework.reverse import reverse
 
 from haystack.query import EmptySearchQuerySet, SearchQuerySet
@@ -20,6 +20,8 @@ from isisdata.tasks import *
 import datetime
 import pytz
 import base64
+import numpy
+import json
 
 def authority(request, authority_id):
     """
@@ -305,6 +307,58 @@ def authority(request, authority_id):
         'related_dataset_facet': related_dataset_facet,
     }
     return render(request, 'isisdata/authority.html', context)
+
+
+def authority_decade(request, authority_id, other_authority_id, relation_type):
+    # check if db has already a cached data object for the two authories
+    # if yes, return that
+    # else do below calculations
+
+    c2=Citation.objects.filter(acrelation__authority_id=other_authority_id).filter(acrelation__authority_id=authority_id, acrelation__authority__type_controlled=relation_type)
+    #, acrelation__public=True, acrelation__authority__public=True).distinct()
+    print(c2)
+    years = []
+    for c in c2.all():
+        if c.publication_date:
+            years.append(c.publication_date.year)
+        print(years)
+    counts,bins = numpy.histogram(years , bins=6 , range=(1970,2030))
+    counts1,bins1 = numpy.histogram(years , bins=60 , range=(1970,2030))
+    bins = bins.astype(int)
+    bins1 = bins1.astype(int)
+    bins = numpy.array(bins).tolist()
+    z = dict(zip(bins , counts))
+    z1 = dict(zip(bins1 , counts1))
+    new1 = [bins , counts] 
+    new2 = [bins1, counts1]
+    #new = numpy.array(new1).tolist()
+    #print(new1)
+    #print(new2)
+    #print(new1[0]['type'])
+    #i = 0
+    #j = 0
+    
+    for key,value in z.items():   
+        DecadeData = CachedDecadeData()
+        DecadeData.authority_id = authority_id
+        DecadeData.other_authority_id = other_authority_id
+        DecadeData.decade = key
+        DecadeData.decade_count = value
+        DecadeData.save()
+        decadedata = {}
+        decadedata.update({
+                    'status': 'done',
+                    'authority':authority_id,
+                    'other_authority': other_authority_id,
+                    'decade': key,
+                    'decade_count': value,
+                            })
+    #model_to_dict(DecadeData)
+    # add f, k and authority ids
+    #data = serializers.serialize('json', [decadedata], fields=('status', 'authority','other_authority', 'decade','decade_count'))
+        print(decadedata)
+    return JsonResponse(decadedata)
+    #return HttpResponse(json.dumps(decadedata))
 
 def authority_author_timeline(request, authority_id):
     now = datetime.datetime.now()

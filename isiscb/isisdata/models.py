@@ -19,7 +19,7 @@ from django.urls import reverse as core_reverse
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 import jsonpickle
-
+import json 
 
 from markupfield.fields import MarkupField
 
@@ -2431,6 +2431,21 @@ class CachedTimeline(models.Model):
     complete = models.BooleanField(default=False)
     recalculate = models.BooleanField(default=False)
 
+class CachedDecadeData(models.Model):
+  
+    
+
+    # CHECK: Had to add on_delete so chose cascade -> JD: yes that makes sense
+   # timeline_decade = models.ForeignKey(CachedTimeline, related_name='decades', on_delete=models.CASCADE)
+    authority_id = models.CharField(max_length=255, blank=True, null=True)
+    other_authority_id = models.CharField(max_length=255, blank=True, null=True)
+    decade_count = models.BigIntegerField()
+    decade = models.IntegerField()
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+    
 
 class CachedTimelineYear(models.Model):
     """

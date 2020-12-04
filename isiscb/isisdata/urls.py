@@ -71,6 +71,7 @@ urlpatterns = [
     url(r'^statistics', views.statistics, name='statistics'),
     url(r'^api', views.api_documentation, name='api'),
     url(r'^(?P<authority_id>[A-Z]+[0-9]+)/timeline/recalculate', authority_views.timeline_recalculate, name='recalculate_timeline'),
+    url(r'^(?P<authority_id>[A-Z]+[0-9]+)/(?P<other_authority_id>[A-Z]+[0-9]+)/(?P<relation_type>)', authority_views.authority_decade, name='authority_decade'),
     url(r'^curation/', include('curation.urls', namespace="curation")),
 ]
 
@@ -79,3 +80,4 @@ urlpatterns = [
 #    urlpatterns = [
 #        url('__debug__/', include(debug_toolbar.urls)),
 #    ] + urlpatterns
+#
